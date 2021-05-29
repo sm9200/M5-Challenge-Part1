@@ -1,6 +1,9 @@
 //This is the initial ideation for the logic of the first part of two-part challenge. 
 #include "M5Atom.h"
 
+const unsigned long eventInterval = 1000; // interval at which to blink (milliseconds) not going to change
+unsigned long  previousTime = 0; // will store last time LED was updated , unsigned long because value of Millis gets extremely large 
+
 void setup()
 {
     M5.begin(true, false, true);
@@ -27,20 +30,35 @@ void loop()
              break;
              
         case 1:   //all red
-             for (x = 0; x < 5; x++) {
-                for (y = 0; y < 5; y++) {
+         unsigned long currentTime = millis();  //updates frequently the current time 
+         if (currentTime - previousTime >= eventInterval) 
+         {
+             for (x = 0; x < 5; x++) 
+             {
+                for (y = 0; y < 5; y++) 
+                {
                  M5.dis.drawpix(x, y,0x00f000);
-                  }
-                        }
+                }
+             }
+             //update time for next time around 
+            previousTime = currentTime;
+         }
             break;
         case 2: 
-            
+         unsigned long currentTime = millis();  //updates frequently the current time 
+         if (currentTime - previousTime >= eventInterval) 
+         {
             // all white
-            for (x = 0; x < 5; x++) {
-                for (y = 0; y < 5; y++) {
+            for (x = 0; x < 5; x++) 
+            {
+                for (y = 0; y < 5; y++) 
+                {
                  M5.dis.drawpix(x, y,0x707070);
-                  }
-                        }
+                 }
+            }
+            //update time for next time around 
+            previousTime = currentTime;
+          }              
             break;
             
         default:
@@ -56,9 +74,6 @@ void loop()
     delay(50);
     M5.update();
 }
-
-
-
 
 
 
