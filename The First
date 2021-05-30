@@ -3,6 +3,7 @@
 
 const unsigned long eventInterval = 1000; // interval at which to blink (milliseconds) not going to change
 unsigned long  previousTime = 0; // will store last time LED was updated , unsigned long because value of Millis gets extremely large 
+//screen update 
 
 void setup()
 {
@@ -15,58 +16,48 @@ uint8_t FSM = 0;
 
 void loop()
 {
-    if (M5.Btn.wasPressed()) //if button pressed
+    if (M5.Btn.wasPressed())
     {
         int x, y;
         switch (FSM)
         {
         case 0:  //All black
-            for (x = 0; x < 5; x++) 
-             {
-                for (y = 0; y < 5; y++) 
-                {
+            for (x = 0; x < 5; x++) {
+                for (y = 0; y < 5; y++) {
                  M5.dis.drawpix(x, y, 00000000);
-                 }
-             }
+                  }
+                        }
             delay(100);
              break;
              
         case 1:   //all red
-           
-             for (x = 0; x < 5; x++) 
-             {
-                  for (y = 0; y < 5; y++) 
-                  {
-                     M5.dis.drawpix(x, y,0x00f000);
-                   }
-              }
-                  
+             for (x = 0; x < 5; x++) {
+                for (y = 0; y < 5; y++) {
+                 M5.dis.drawpix(x, y,0x00f000);
+                  }
+                        }
             break;
         case 2: 
-                // all white
-             for (x = 0; x < 5; x++) 
-             {
-               for (y = 0; y < 5; y++) 
-               {
+            
+            // all white
+            for (x = 0; x < 5; x++) {
+                for (y = 0; y < 5; y++) {
                  M5.dis.drawpix(x, y,0x707070);
-                }
-              }         
+                  }
+                        }
             break;
             
         default:
             break;
-       
+        }
         FSM++;
         if (FSM >= 4)
         {
             FSM = 0;
         }
-      }
+    }
 
-    delay(50);
-    M5.update();
-  }
-    /*if button pressed 2 times, so red light on, display black then red immeadelty and wait for the interval assigned, then this will loop using void loop function*/ 
+    /*if button pressed 3 times, so red light on, display black then white immeadelty and wait for the interval assigned, then this will loop using void loop function*/ 
   if (FSM == 3) 
   {
     unsigned long currentTime = millis();  //updates frequently the current time 
@@ -87,6 +78,7 @@ void loop()
      } 
      
    }
+   delay(50);
+    M5.update();
 }
-
 
