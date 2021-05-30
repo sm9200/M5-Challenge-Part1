@@ -3,7 +3,6 @@
 
 const unsigned long eventInterval = 1000; // interval at which to blink (milliseconds) not going to change
 unsigned long  previousTime = 0; // will store last time LED was updated , unsigned long because value of Millis gets extremely large 
-int i = 0;
 
 void setup()
 {
@@ -16,59 +15,44 @@ uint8_t FSM = 0;
 
 void loop()
 {
-    if (M5.Btn.wasPressed())
+    if (M5.Btn.wasPressed()) //if button pressed
     {
         int x, y;
         switch (FSM)
         {
         case 0:  //All black
-            for (x = 0; x < 5; x++) {
-                for (y = 0; y < 5; y++) {
+            for (x = 0; x < 5; x++) 
+             {
+                for (y = 0; y < 5; y++) 
+                {
                  M5.dis.drawpix(x, y, 00000000);
-                  }
-                        }
+                 }
+             }
             delay(100);
              break;
              
         case 1:   //all red
-        while (i<2)
-        {
-            unsigned long currentTime = millis();  //updates frequently the current time 
-            if (currentTime - previousTime >= eventInterval) 
-            {
-                 for (x = 0; x < 5; x++) 
-                 {
-                     for (y = 0; y < 5; y++) 
-                     {
-                         M5.dis.drawpix(x, y,0x00f000);
-                     }
-                  }
-                  //update time for next time around 
-                 previousTime = currentTime;
-             }
+           
+             for (x = 0; x < 5; x++) 
+             {
+                  for (y = 0; y < 5; y++) 
+                  {
+                     M5.dis.drawpix(x, y,0x00f000);
+                   }
+              }
+                  
             break;
-            i--;
-        }
         case 2: 
-        while (i<2)
-        {
-            unsigned long currentTime = millis();  //updates frequently the current time 
-            if (currentTime - previousTime >= eventInterval) 
-            {
                 // all white
-                for (x = 0; x < 5; x++) 
-                {
-                    for (y = 0; y < 5; y++) 
-                    {
-                      M5.dis.drawpix(x, y,0x707070);
-                     }
-                 }
-                 //update time for next time around 
-                 previousTime = currentTime;
-            }              
+             for (x = 0; x < 5; x++) 
+             {
+               for (y = 0; y < 5; y++) 
+               {
+                 M5.dis.drawpix(x, y,0x707070);
+                }
+              }         
             break;
-            i--;
-        }    
+            
         default:
             break;
        
@@ -77,13 +61,32 @@ void loop()
         {
             FSM = 0;
         }
-    }
+      }
 
     delay(50);
     M5.update();
+  }
+    /*if button pressed 2 times, so red light on, display black then red immeadelty and wait for the interval assigned, then this will loop using void loop function*/ 
+  if (FSM == 2) 
+  {
+    unsigned long currentTime = millis();  //updates frequently the current time 
+    if (currentTime - previousTime >= eventInterval)
+    {
+      for (x = 0; x < 5; x++) 
+      {
+          for (y = 0; y < 5; y++) 
+          {
+              M5.dis.drawpix(x, y,00000000);
+              M5.dis.drawpix(x, y,0x00f000);
+              
+           }
+           //update time for next time around 
+           previousTime = currentTime;
+      }
+      
+     } 
+     
+   }
 }
-}
-
-
 
 
