@@ -57,7 +57,7 @@ void loop()
         }
     }
 
-    /*if button pressed 3 times, so red light on, display black then white immeadelty and wait for the interval assigned, then this will loop using void loop function*/ 
+    /*if button pressed 3 times, so red light on, display black then white immediately and wait for the interval assigned, then this will loop using void loop function*/ 
   if (FSM == 3) 
   {
     unsigned long currentTime = millis();  //updates frequently the current time 
