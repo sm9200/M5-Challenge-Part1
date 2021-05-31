@@ -1,1 +1,27 @@
-#This is the code for the second part: the temperature 
+//This is the code for the second part: the temperature 
+//Mode Changer
+
+#include "M5Atom.h" 
+
+void setup()
+{
+    M5.begin(true, false, true); 
+    
+    IMU6886Flag = M5.IMU.Init() == 0;
+  
+    if(!IMU6886Flag)
+    {
+        Serial.println("Error initializing the IMU! :-(");
+    }
+}
+
+
+void loop() 
+{
+
+
+
+
+
+
+}
