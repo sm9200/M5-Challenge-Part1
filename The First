@@ -1,64 +1,159 @@
-//This is the initial ideation for the logic of the first part of two-part challenge. 
-#include "M5Atom.h"
+// This code needs some editting on the delay functions which will be worked on.
 
+#include "M5Atom.h"
+#include <FastLED.h>
+#include <ctime>
+bool IMU6886Flag = false;
+float accX = 0, accY = 0, accZ = 0;
+  
 void setup()
 {
     M5.begin(true, false, true);
-    M5.dis.drawpix(0, 0xf00000);//paint 1st LED
+    delay(50);
+    M5.dis.drawpix(0, 0xf00000);
+    IMU6886Flag = M5.IMU.Init() == 0;
+    bool IMU6886Flag = false;
+    
 }
 
-uint8_t FSM = 0;
+int FSM = 0;
+
+const long interval=1000;
+unsigned long previousMillis=0;
 
 void loop()
 {
-    if (M5.Btn.wasPressed())
-    {
-        int x, y;
-        switch (FSM)
-        {
-        case 0:  //All black
-            for (x = 0; x < 5; x++) {
-                for (y = 0; y < 5; y++) {
-                 M5.dis.drawpix(x, y, 00000000);
-                  }
-                        }
-            delay(100);
-             break;
-             
-        case 1:   //all red
-             for (x = 0; x < 5; x++) {
-                for (y = 0; y < 5; y++) {
-                 M5.dis.drawpix(x, y,0x00f000);
-                  }
-                        }
-            break;
-        case 2: 
-            
-            // all white
-            for (x = 0; x < 5; x++) {
-                for (y = 0; y < 5; y++) {
-                 M5.dis.drawpix(x, y,0x707070);
-                  }
-                        }
-            break;
-            
-        default:
-            break;
+  
+   
+    switch(FSM){
+       case 0:{if(M5.Btn.wasPressed()){
+         FSM++; 
+          }
+        break;}
+        
+      case 1:{
+        M5.dis.fillpix(0x000000);
+        if(M5.Btn.wasPressed()){
+         FSM++; 
+          }
+        break;
         }
-        FSM++;
-        if (FSM >= 4)
+        
+       case 2 :
+       {
+       unsigned long currentMillis=millis();
+       
+       while (FSM==2)
+       {
+        M5.dis.fillpix(0x00f000);
+        delay(200);
+        M5.dis.fillpix(0x000000);
+        delay(200);
+       
+        if(M5.Btn.wasPressed())
         {
-            FSM = 0;
+          FSM++;
+          break;
+         }
+         break;
+       }
+          break;
+        
+        
         }
-    }
 
-    delay(50);
-    M5.update();
-}
+       case 3:{
+        while (FSM==3)
+       {
+
+        
+        M5.dis.fillpix(0x707070);
+        delay(200);
+        M5.dis.fillpix(0x000000);
+        delay(200);
+       
+        if(M5.Btn.wasPressed())
+        {
+          FSM++;
+          break;
+         }
+         break;
+       }
+          break;
+        }
 
 
+       case 4:{
+       
+       while(FSM==4){
+       bool IMU6886Flag = false;
+      
+       M5.IMU.getAccelData(&accX,&accY,&accZ);
+       Serial.printf("Accelerometer:%.2f mg\r\n",accZ * 1000);
+       
+       if(accZ*1000>=0.1)
+       {
+        M5.dis.fillpix(0x00f000);
+        delay(200);
+        M5.dis.fillpix(0x000000);
+        delay(200);
+       }
+       else
+       {
+        M5.dis.fillpix(0x00f000);
+       }
+        if(M5.Btn.wasPressed())
+        {
+          FSM++;
+          break;
+         }
+         break;
+       
+       }
+       break; 
+        }
 
+       case 5: 
+       
+       {
+       while(FSM==5){
+       bool IMU6886Flag = false;
+      
+       M5.IMU.getAccelData(&accX,&accY,&accZ);
+       Serial.printf("Accelerometer:%.2f mg\r\n",accZ * 1000);
+       
+       if(accZ*1000<=0.1)
+       {
+        M5.dis.fillpix(0x707070);
+        delay(200);
+        M5.dis.fillpix(0x000000);
+        delay(200);
+       }
+       else
+       {
+        M5.dis.fillpix(0x707070);
+       }
+        if(M5.Btn.wasPressed())
+        {
+          FSM++;
+          break;
+         }
+         break;
+       
+       }
+       break; 
+        
+       }
 
+      
+
+        
+        }
+
+  
+        M5.update();
+      }
+        
 
 
 
