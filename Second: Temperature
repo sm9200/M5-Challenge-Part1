@@ -1,27 +1,37 @@
 //This is the code for the second part: the temperature 
 //Mode Changer
 
-#include "M5Atom.h" 
-
-void setup()
 {
-    M5.begin(true, false, true); 
-    
-    IMU6886Flag = M5.IMU.Init() == 0;
-  
-    if(!IMU6886Flag)
-    {
-        Serial.println("Error initializing the IMU! :-(");
-    }
-}
-
-
-void loop() 
-{
-
-
-
-
-
-
-}
+        drawArray(letterOne, colorList);
+        if (M5.Btn.wasPressed())
+        {
+          FSM = 2;
+        }
+        float totalTemp=0;
+        float averageTemp=0;
+        int counter=0;
+        while (FSM == 2)
+        {
+          {
+            if (IMU6886Flag)
+            {
+              M5.IMU.getTempData(&tempC);
+              totalTemp+=tempC;
+              counter++;
+              averageTemp=totalTemp/counter;
+              Serial.printf("Temperature: %.2f C \r\n", tempC); //put here just to see if temp was read
+              Serial.println("");
+              delay(1000);
+              matrix.fillScreen(0);
+              matrix.setCursor(x, matrix.height());
+              matrix.println((averageTemp));
+              if (--x < -60) {
+                x = matrix.width();
+                if (++pass >= 3) pass = 0;
+                matrix.setTextColor(colors[pass]);
+              }
+              matrix.show();
+            }
+          }
+        }
+      }
