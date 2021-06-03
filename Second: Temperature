@@ -19,7 +19,78 @@ void setup()
 void loop() 
 {
 
+//This code switches between modes and activates when vertical, but not when tilting.
 
+ if (abs(scaledAccX) < LOW_TOL && abs(scaledAccY) > HIGH_TOL && abs(scaledAccZ) < LOW_TOL && scaledAccY > 0)
+  {
+
+    if (M5.Btn.wasPressed())   
+    {
+
+      if(abs(accX_avg) > 0.5){ // 0.5g = 45deg tilt angle
+          if(accX_avg < -0.5){
+            tilt_move = LEFT;
+          }
+          if(accX_avg > 0.5){
+            tilt_move = RIGHT;
+          }
+
+      if ((tilt_move=RIGHT)&counter<5)
+      {
+        counter++;
+      }
+
+        else if ((tilt_move=LEFT)&counter>1)
+        {
+          counter--;
+        }
+
+          else if (counter==5)
+          {
+            counter=1;
+          }
+            else if (counter==1)
+            {
+            counter=5;
+            }
+          }
+
+
+
+        switch (counter)
+      {
+        case 0:
+          M5.dis.fillpix(GREEN);
+            break;
+          case 1:
+            display_number(1);
+            Serial.printf("This is mode 1");
+            break;
+          case 2:
+            Serial.printf("This is mode 2");
+            display_number(2);
+            break;
+          case 3:
+            Serial.printf("This is mode 3");
+            display_number(3);
+            break;
+          case 4:
+            display_number(4);
+            Serial.printf("This is mode 4");
+            break;
+          case 5:
+            display_number(5);
+            Serial.printf("This is mode 5");
+            break;
+          default:
+          Serial.printf("This is the default");
+          break;
+
+        }
+    }
+  }
+
+//}
 
 
 
