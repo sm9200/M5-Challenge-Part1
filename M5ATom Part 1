@@ -1,0 +1,162 @@
+#include "M5Atom.h"
+#include <FastLED.h>
+
+bool IMU6886Flag = false;
+
+void setup()
+{
+  M5.begin(true, false, true);
+  delay(50);
+  M5.dis.drawpix(0, 0xf00000);
+  IMU6886Flag = M5.IMU.Init() == 0;
+}
+
+int FSM = 0;
+float accX = 0, accY = 0, accZ = 0;
+unsigned long previousMillis = 0;
+int blinker = 0;
+
+void loop()
+{
+  switch (FSM) {
+    case 0: 
+      {
+        if (M5.Btn.wasPressed())
+        {
+          FSM++;
+        }
+        break;
+      }
+
+    case 1:   //OFF: All LEDs Off.
+      {
+        M5.dis.fillpix(0x000000);
+        if (M5.Btn.wasPressed())
+        {
+          FSM++;
+        }
+        break;
+      }
+
+    case 2 :    //Manual RED Strobe 
+      {
+        if (FSM == 2)
+        {
+          M5.dis.fillpix(0x00f000);
+          if (millis() - previousMillis >= 6000)
+          {
+            blinker = 1;
+            previousMillis = millis();
+          }
+          if (blinker == 1)
+          {
+            M5.dis.fillpix(0x000000);
+          }
+          if (M5.Btn.wasPressed())
+          {
+            FSM++;
+            break;
+          }
+          break;
+        }
+        break;
+      }
+
+    case 3:   //Manual WHITE STROBE
+      {
+        if (FSM == 3)
+        {
+          M5.dis.fillpix(0x707070);
+          if (millis() - previousMillis >= 1000)
+          {
+            blinker = 1;
+            previousMillis = millis();
+          }
+          if (blinker == 1)
+          {
+            M5.dis.fillpix(0x000000);
+          }
+          if (M5.Btn.wasPressed())
+          {
+            FSM++;
+            break;
+          }
+          break;
+        }
+        break;
+      }
+
+    case 4:   //Automatic Rear Mode(RED)
+      {
+        if (FSM == 4)
+        {
+          bool IMU6886Flag = false;
+
+          M5.IMU.getAccelData(&accX, &accY, &accZ);    // Condition to determine the threshold for braking event.
+          Serial.printf("Accelerometer:%.2f mg\r\n", accZ * 1000);    //Only in Z-axis since bike is assumed to move in that plane.
+
+          if (accZ * 1000 >= 0.1)
+          {
+            M5.dis.fillpix(0x00f000);
+            if (millis() - previousMillis >= 500)
+            {
+              blinker = 1;
+              previousMillis = millis();
+            }
+            if (blinker == 1)
+            {
+              M5.dis.fillpix(0x000000);
+            }
+          }
+          else
+          {
+            M5.dis.fillpix(0x00f000);
+          }
+          if (M5.Btn.wasPressed())
+          {
+            FSM++;
+            break;
+          }
+          break;
+        }
+        break;
+      }
+
+    case 5:   //Automatic Rear Mode (White)
+      {
+        if (FSM == 5) {
+          bool IMU6886Flag = false;
+
+          M5.IMU.getAccelData(&accX, &accY, &accZ);
+          Serial.printf("Accelerometer:%.2f mg\r\n", accZ * 1000);
+
+          if (accZ * 1000 <= 0.1)   // Condition to determine the threshold for braking event.
+          {                         //Only in Z-axis since bike is assumed to move in that plane.
+            M5.dis.fillpix(0x707070);
+            if (millis() - previousMillis >= 400)
+            {
+              blinker = 1;
+              previousMillis = millis();
+            }
+            if (blinker == 1)
+            {
+              M5.dis.fillpix(0x000000);
+            }
+          }
+          else
+          {
+            M5.dis.fillpix(0x707070);
+          }
+          if (M5.Btn.wasPressed())
+          {
+            FSM++;
+            break;
+          }
+          break;
+        }
+        break;
+      }
+  }
+  M5.update();
+}
+
